@@ -15,5 +15,5 @@ conda activate /n03data/huertas/envs/Denario_env
 
 cd /n03data/huertas/python/Denario/astroinfo
 
-python /n03data/huertas/python/Denario/astroinfo/denario_astropt_fastmode.py
+python /n03data/huertas/python/Denario/astroinfo/denario_astropt.py
 
