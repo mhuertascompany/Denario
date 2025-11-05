@@ -20,16 +20,20 @@ anomalies than only images. Use torch, NOT Tensorflow. Do not install any new pa
 """)
 
 # Generate a research idea from the input text
-den.get_idea_fast(llm='gemini-2.5-flash', verbose=False)
+#den.get_idea_fast(llm='gemini-2.5-flash', verbose=False)
 
 # Check if idea is novel or not
-den.check_idea(llm='gemini-2.5-flash')
+#den.check_idea(llm='gemini-2.5-flash')
 
 # Generate a research plan to carry out the idea
-den.get_method_fast(llm="gemini-2.5-pro", verbose=False)
+#den.get_method_fast(llm="gemini-2.5-pro", verbose=False)
 
 # Follow the research plan, write and execute code, make plots, and summarize the results
-den.get_results(engineer_model='gemini-2.5-pro', researcher_model='gemini-2.5-pro')
+#den.get_results(engineer_model='gemini-2.5-pro', researcher_model='gemini-2.5-pro')
+# Follow the research plan, write and execute code, make plots, and summarize the results
+den.get_results(engineer_model='gemini-2.5-pro',
+        researcher_model='gemini-2.5-pro',
+        restart_at_step=2)
 
 # Write a paper with [APS (Physical Review Journals)](https://journals.aps.org/) style
-den.get_paper(journal=Journal.AAS, llm='gemini-2.5-flash', add_citations=False)
+#den.get_paper(journal=Journal.AAS, llm='gemini-2.5-flash', add_citations=False)
