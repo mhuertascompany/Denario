@@ -1,7 +1,7 @@
 from denario import Denario
 from denario import Journal
 
-den = Denario(project_dir="/n03data/huertas/python/Denario/astroinfo/project")
+den = Denario(project_dir="/n03data/huertas/python/Denario/astroinfo/project_euclid_desi")
 
 data_description = r"""
 We have a multimodal dataset of galaxies combining DESI spectroscopy and EUCLID imaging. The data is stored in a HuggingFace dataset at this
