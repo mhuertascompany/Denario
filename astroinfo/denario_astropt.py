@@ -4,11 +4,12 @@ from denario import Journal
 den = Denario(project_dir="/n03data/huertas/python/Denario/astroinfo/project")
 
 data_description = r"""
-We have a multimodal dataset combining DESI spectroscopy and EUCLID imaging. The data is stored in a HuggingFace dataset in this
-local folder:/n03data/huertas/desi_euclid/msiudek___astro_pt_euclid_desi_dataset/default/0.0.0/f01ad07862bebd37408df02a0a38431bbdc7fad9. 
-The keywords were are going to use are ['VIS_image', 'NISP_Y_image', 'NISP_J_image', 'NISP_H_image'] for images and ['spectrum'] for spectra.
-There is no other metadata available - only data. The spectra are all rest-framed and calibrated. The images are properly reduced and centered around objects.
-the dataset contains both images and corresponding spectrum, no need to cross-match.
+We have a multimodal dataset of galaxies combining DESI spectroscopy and EUCLID imaging. The data is stored in a HuggingFace dataset at this
+remote URL: https://huggingface.co/datasets/msiudek/astroPT_euclid_Q1_desi_dr1_dataset. There are two splits: train (30.9k objects) and split (7.97k objects).
+The dataset needs to be downloaded first to the followinf local path: /n03data/huertas/desi_euclid/
+The keywords we are going to use are ['VIS_image', 'NISP_Y_image', 'NISP_J_image', 'NISP_H_image'] for images and ['spectrum'] for spectra. Images are arrays. Spectrum is a dictionnary containing "wavelength", "flux", "error".
+The redshift of every galaxy is also provided in the dataset: "redshift". The spectra are calibrated but not rest-framed. The images are properly reduced and centered around objects.
+The dataset contains both images and corresponding spectrum, no need to cross-match. 
 """
 
 den.set_data_description(data_description = data_description)
