@@ -42,7 +42,14 @@ anomalies than only images.
 
 den.get_method(mode='cmbagent')
 
-den.get_results(max_n_steps=3)
+#den.get_results(max_n_steps=3)
 
+den.get_results(engineer_model='gpt-4.1-mini',
+                        researcher_model='gpt-4.1-mini',
+                        planner_model='gpt-4.1-mini',
+                        plan_reviewer_model='gpt-4.1-mini',
+                        orchestration_model='gpt-4.1-mini',
+                        formatter_model='gpt-5-mini',
+                        )
 
 den.get_paper(journal=Journal.AAS)
