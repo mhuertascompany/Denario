@@ -16,9 +16,9 @@ spectroscopy and Euclid imaging data. The idea is to test whether multimodal dat
 anomalies. The plan is to use the astroPT model (cloned in /n03data/huertas/python/astroPT) to obtain mutlimodal embeddings
 and then perform anomaly detection on those embeddings. We will start with the first part of the project first: obtain multimodal embeddings with astroPT and store them safely. We will worry later about anomalies.
 IMPORTANT: We will have to train a mulitmodal model from scratch, so you will have to go to the astroPT repo, read the code and understand how to do it. There's a script called scripts/train_multimodal.py in the repo. USE IT and ADAPT IT.
-Nomally, the python environemnt is all set up. Avoid installing new packages. Use the packages imported there - do not invent new pakages / imports which will fail.
+Nomally, the python environemnt is all set up. Use the packages imported there - do not invent new pakages / imports which will fail.
 We also have a checkpoint stored here: /n03data/huertas/python/models/astroPT/euclid_Q1/ckpt.pt of a model trained on only Eulcid images, that we can perhaps use for 1. obtaining embeddings on images only for comparison later 
-and 2. starting point for the multimodal training.              
+and 2. starting point for the multimodal training. DO NOT INSTALL NEW PYTHON PACKAGES.             
 """)
 
 #den.set_idea(idea=r"""
