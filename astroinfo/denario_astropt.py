@@ -32,5 +32,5 @@ and 2. starting point for the multimodal training. DO NOT INSTALL NEW PYTHON PAC
 
 den.get_method(mode='cmbagent')
 
-den.get_results(max_n_steps=3, engineer_model="gemini-2.5-pro")
+den.get_results(max_n_steps=3)
 
