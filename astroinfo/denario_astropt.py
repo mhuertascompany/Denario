@@ -7,7 +7,8 @@ data_description = r"""
 We have a multimodal dataset combining DESI spectroscopy and EUCLID imaging. The data is stored in a HuggingFace dataset in this
 local folder:/n03data/huertas/desi_euclid/msiudek___astro_pt_euclid_desi_dataset/default/0.0.0/f01ad07862bebd37408df02a0a38431bbdc7fad9. 
 The keywords were are going to use are ['VIS_image', 'NISP_Y_image', 'NISP_J_image', 'NISP_H_image'] for images and ['spectrum'] for spectra.
-There is no other metadata available - only data.
+There is no other metadata available - only data. The spectra are all rest-framed and calibrated. The images are properly reduced and centered around objects.
+the dataset contains both images and corresponding spectrum, no need to cross-match.
 """
 
 den.set_data_description(data_description = data_description)
