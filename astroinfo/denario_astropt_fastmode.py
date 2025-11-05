@@ -16,7 +16,7 @@ den.set_data_description(data_description = data_description)
 den.set_idea(idea=r"""
 Identify rare or unusual astronomical objects by leveraging the multimodal dataset combining DESI 
 spectroscopy and Euclid imaging data. The idea is to test whether multimodal data leads to more interesting
-anomalies than only images.             
+anomalies than only images. Use torch, NOT Tensorflow. Do not install any new package.             
 """)
 
 # Generate a research idea from the input text
