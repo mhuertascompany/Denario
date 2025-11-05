@@ -33,7 +33,7 @@ anomalies than only images. Use torch, NOT Tensorflow. Do not install any new pa
 # Follow the research plan, write and execute code, make plots, and summarize the results
 den.get_results(engineer_model='gemini-2.5-pro',
         researcher_model='gemini-2.5-pro',
-        restart_at_step=2)
+        restart_at_step=1)
 
 # Write a paper with [APS (Physical Review Journals)](https://journals.aps.org/) style
 #den.get_paper(journal=Journal.AAS, llm='gemini-2.5-flash', add_citations=False)
