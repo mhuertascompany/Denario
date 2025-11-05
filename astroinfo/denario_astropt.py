@@ -1,4 +1,6 @@
 from denario import Denario
+from denario import Journal
+
 den = Denario(project_dir="/n03data/huertas/python/Denario/astroinfo/project")
 
 data_description = r"""
@@ -10,17 +12,23 @@ The keywords were are going to use are ['VIS_image', 'NISP_Y_image', 'NISP_J_ima
 
 den.set_data_description(data_description = data_description)
 
-
 den.set_idea(idea=r"""
 Identify rare or unusual astronomical objects by leveraging the multimodal dataset combining DESI 
 spectroscopy and Euclid imaging data. The idea is to test whether multimodal data leads to more interesting
-anomalies. The plan is to use the astroPT model (cloned in /n03data/huertas/python/astroPT) to obtain mutlimodal embeddings
-and then perform anomaly detection on those embeddings. We will start with the first part of the project first: obtain multimodal embeddings with astroPT and store them safely. We will worry later about anomalies.
-IMPORTANT: We will have to train a mulitmodal model from scratch, so you will have to go to the astroPT repo, read the code and understand how to do it. There's a script called scripts/train_multimodal.py in the repo. USE IT and ADAPT IT.
-Nomally, the python environemnt is all set up. Use the packages imported there - do not invent new pakages / imports which will fail.
-We also have a checkpoint stored here: /n03data/huertas/python/models/astroPT/euclid_Q1/ckpt.pt of a model trained on only Eulcid images, that we can perhaps use for 1. obtaining embeddings on images only for comparison later 
-and 2. starting point for the multimodal training. DO NOT INSTALL NEW PYTHON PACKAGES.             
+anomalies than only images.             
 """)
+
+
+#den.set_idea(idea=r"""
+#Identify rare or unusual astronomical objects by leveraging the multimodal dataset combining DESI 
+#spectroscopy and Euclid imaging data. The idea is to test whether multimodal data leads to more interesting
+#anomalies. The plan is to use the astroPT model (cloned in /n03data/huertas/python/astroPT) to obtain mutlimodal embeddings
+#and then perform anomaly detection on those embeddings. We will start with the first part of the project first: obtain multimodal embeddings with astroPT and store them safely. We will worry later about anomalies.
+#IMPORTANT: We will have to train a mulitmodal model from scratch, so you will have to go to the astroPT repo, read the code and understand how to do it. There's a script called scripts/train_multimodal.py in the repo. USE IT and ADAPT IT.
+#Nomally, the python environemnt is all set up. Use the packages imported there - do not invent new pakages / imports which will fail.
+#We also have a checkpoint stored here: /n03data/huertas/python/models/astroPT/euclid_Q1/ckpt.pt of a model trained on only Eulcid images, that we can perhaps use for 1. obtaining embeddings on images only for comparison later 
+#and 2. starting point for the multimodal training. DO NOT INSTALL NEW PYTHON PACKAGES.             
+#""")
 
 #den.set_idea(idea=r"""
 #Identify rare or unusual astronomical objects by leveraging the multimodal dataset combining DESI 
@@ -35,3 +43,5 @@ den.get_method(mode='cmbagent')
 
 den.get_results(max_n_steps=3)
 
+
+den.get_paper(journal=Journal.AAS)
