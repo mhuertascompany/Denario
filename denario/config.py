@@ -23,3 +23,20 @@ METHOD_FILE = "methods.md"
 RESULTS_FILE = "results.md"
 LITERATURE_FILE = "literature.md"
 REFEREE_FILE = "referee.md"
+
+# ERC-specific input files
+CALL_INFO_FILE = "erc_call_info.md"
+VISION_FILE = "erc_vision.md"
+OBJECTIVES_FILE = "erc_objectives.md"
+WORK_PACKAGES_FILE = "erc_work_packages.md"
+IMPLEMENTATION_FILE = "erc_implementation.md"
+IMPACT_FILE = "erc_impact.md"
+TEAM_FILE = "erc_team.md"
+ETHICS_FILE = "erc_ethics.md"
+BUDGET_FILE = "erc_budget.md"
+PRIOR_RESULTS_FILE = "erc_prior_results.md"
+
+# ERC-specific folders inside input_files
+CALL_DOCS_DIR = "erc_call_docs"
+APPLICANT_DOCS_DIR = "erc_applicant_docs"
+PRIOR_RESULTS_DOCS_DIR = "erc_prior_results_docs"

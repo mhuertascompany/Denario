@@ -7,8 +7,30 @@ from pathlib import Path
 from PIL import Image 
 import cmbagent
 
-from .config import DEFAUL_PROJECT_NAME, INPUT_FILES, PLOTS_FOLDER, DESCRIPTION_FILE, IDEA_FILE, METHOD_FILE, RESULTS_FILE, LITERATURE_FILE
-from .research import Research
+from .config import (
+    DEFAUL_PROJECT_NAME,
+    INPUT_FILES,
+    PLOTS_FOLDER,
+    DESCRIPTION_FILE,
+    IDEA_FILE,
+    METHOD_FILE,
+    RESULTS_FILE,
+    LITERATURE_FILE,
+    CALL_INFO_FILE,
+    VISION_FILE,
+    OBJECTIVES_FILE,
+    WORK_PACKAGES_FILE,
+    IMPLEMENTATION_FILE,
+    IMPACT_FILE,
+    TEAM_FILE,
+    ETHICS_FILE,
+    BUDGET_FILE,
+    PRIOR_RESULTS_FILE,
+    CALL_DOCS_DIR,
+    APPLICANT_DOCS_DIR,
+    PRIOR_RESULTS_DOCS_DIR,
+)
+from .research import Research, ERCProposal
 from .key_manager import KeyManager
 from .llm import LLM, models
 from .paper_agents.journal import Journal
@@ -18,6 +40,11 @@ from .experiment import Experiment
 from .paper_agents.agents_graph import build_graph
 from .utils import llm_parser, input_check, check_file_paths, in_notebook
 from .langgraph_agents.agents_graph import build_lg_graph
+from .erc.document_ingestion import (
+    summarize_call_documents,
+    summarize_applicant_documents,
+    summarize_prior_results_documents,
+)
 from cmbagent import preprocess_task
 
 class Denario:
@@ -83,7 +110,7 @@ class Denario:
     def reset(self) -> None:
         """Reset Research object"""
 
-        self.research = Research()
+        self.research = type(self.research)()
 
     #---
     # Setters
@@ -150,6 +177,166 @@ class Denario:
             
             img.save( os.path.join(self.project_dir, INPUT_FILES, PLOTS_FOLDER, plot_name) )
 
+    def _ensure_erc_research(self) -> ERCProposal:
+        """Return the ERCProposal object or raise if not configured."""
+
+        if not isinstance(self.research, ERCProposal):
+            raise AttributeError(
+                "Current research object is not ERC-capable. "
+                "Initialize Denario with research=ERCProposal() to use ERC setters."
+            )
+        return self.research
+
+    def set_call_info(self, call_info: str | None = None) -> None:
+        """Set ERC call and constraint information."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.call_info = self.setter(call_info, CALL_INFO_FILE)
+
+    def set_vision(self, vision: str | None = None) -> None:
+        """Set ERC extended synopsis / vision section."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.vision = self.setter(vision, VISION_FILE)
+
+    def set_objectives(self, objectives: str | None = None) -> None:
+        """Set ERC objectives and ambition section."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.objectives = self.setter(objectives, OBJECTIVES_FILE)
+
+    def set_work_packages(self, work_packages: str | None = None) -> None:
+        """Set ERC work-package definitions."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.work_packages = self.setter(work_packages, WORK_PACKAGES_FILE)
+
+    def set_implementation_plan(self, implementation_plan: str | None = None) -> None:
+        """Set ERC implementation / management plan."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.implementation_plan = self.setter(implementation_plan, IMPLEMENTATION_FILE)
+
+    def set_impact_plan(self, impact_plan: str | None = None) -> None:
+        """Set ERC impact, communication, and exploitation plan."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.impact_plan = self.setter(impact_plan, IMPACT_FILE)
+
+    def set_team_profile(self, team_profile: str | None = None) -> None:
+        """Set ERC team and environment information."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.team_profile = self.setter(team_profile, TEAM_FILE)
+
+    def set_ethics_strategy(self, ethics_strategy: str | None = None) -> None:
+        """Set ERC ethics and risk mitigation section."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.ethics_strategy = self.setter(ethics_strategy, ETHICS_FILE)
+
+    def set_budget_overview(self, budget_overview: str | None = None) -> None:
+        """Set ERC budget overview section."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.budget_overview = self.setter(budget_overview, BUDGET_FILE)
+
+    def set_prior_results(self, prior_results: str | None = None) -> None:
+        """Set ERC prior results / track record section."""
+
+        erc_research = self._ensure_erc_research()
+        erc_research.prior_results = self.setter(prior_results, PRIOR_RESULTS_FILE)
+
+    def ingest_call_documents(self,
+                              document_paths: list[str] | None = None,
+                              summarizer_model: LLM | str = models["gpt-4o-mini"],
+                              summarizer_response_formatter_model: LLM | str = models["o3-mini"]) -> str:
+        """
+        Summarize call documents (PDF or markdown) and store them in the ERC call info file.
+
+        Args:
+            document_paths: Explicit list of document paths to ingest. If None, load every supported file
+                in `project_dir/input_files/erc_call_docs`.
+            summarizer_model: LLM used to summarize the concatenated documents.
+            summarizer_response_formatter_model: LLM used to format the summarizer response.
+
+        Returns:
+            The summarized call information that was written to disk.
+        """
+
+        self._ensure_erc_research()
+        summarizer_model = llm_parser(summarizer_model)
+        summarizer_response_formatter_model = llm_parser(summarizer_response_formatter_model)
+
+        summary = summarize_call_documents(
+            project_dir=self.project_dir,
+            document_paths=document_paths,
+            summarizer_model=summarizer_model.name,
+            summarizer_response_formatter_model=summarizer_response_formatter_model.name,
+        )
+        self.set_call_info(summary)
+        return summary
+
+    def ingest_applicant_profile(self,
+                                 document_paths: list[str] | None = None,
+                                 summarizer_model: LLM | str = models["gpt-4o-mini"],
+                                 summarizer_response_formatter_model: LLM | str = models["o3-mini"]) -> str:
+        """
+        Summarize PI CVs, host letters, and applicant material into the ERC team profile section.
+
+        Args:
+            document_paths: Explicit list of document paths to ingest. If None, load every supported file
+                in `project_dir/input_files/erc_applicant_docs`.
+            summarizer_model: LLM used to summarize the concatenated documents.
+            summarizer_response_formatter_model: LLM used to format the summarizer response.
+
+        Returns:
+            The summarized applicant profile that was written to disk.
+        """
+
+        self._ensure_erc_research()
+        summarizer_model = llm_parser(summarizer_model)
+        summarizer_response_formatter_model = llm_parser(summarizer_response_formatter_model)
+
+        summary = summarize_applicant_documents(
+            project_dir=self.project_dir,
+            document_paths=document_paths,
+            summarizer_model=summarizer_model.name,
+            summarizer_response_formatter_model=summarizer_response_formatter_model.name,
+        )
+        self.set_team_profile(summary)
+        return summary
+
+    def ingest_prior_results(self,
+                             document_paths: list[str] | None = None,
+                             summarizer_model: LLM | str = models["gpt-4o-mini"],
+                             summarizer_response_formatter_model: LLM | str = models["o3-mini"]) -> str:
+        """
+        Summarize prior results, key publications, or track-record evidence into the ERC prior results section.
+
+        Args:
+            document_paths: Explicit list of document paths to ingest. If None, load every supported file
+                in `project_dir/input_files/erc_prior_results_docs`.
+            summarizer_model: LLM used to summarize the concatenated documents.
+            summarizer_response_formatter_model: LLM used to format the summarizer response.
+
+        Returns:
+            The summarized prior results text that was written to disk.
+        """
+
+        self._ensure_erc_research()
+        summarizer_model = llm_parser(summarizer_model)
+        summarizer_response_formatter_model = llm_parser(summarizer_response_formatter_model)
+
+        summary = summarize_prior_results_documents(
+            project_dir=self.project_dir,
+            document_paths=document_paths,
+            summarizer_model=summarizer_model.name,
+            summarizer_response_formatter_model=summarizer_response_formatter_model.name,
+        )
+        self.set_prior_results(summary)
+        return summary
+
     def set_all(self) -> None:
         """Set all Research fields if present in the working directory"""
 
@@ -164,6 +351,24 @@ class Denario:
                 setter()
             except FileNotFoundError:
                 pass
+
+        if isinstance(self.research, ERCProposal):
+            for setter in (
+                self.set_call_info,
+                self.set_vision,
+                self.set_objectives,
+                self.set_work_packages,
+                self.set_implementation_plan,
+                self.set_impact_plan,
+                self.set_team_profile,
+                self.set_ethics_strategy,
+                self.set_budget_overview,
+                self.set_prior_results,
+            ):
+                try:
+                    setter()
+                except FileNotFoundError:
+                    pass
 
     #---
     # Printers
