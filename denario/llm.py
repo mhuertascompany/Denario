@@ -80,6 +80,9 @@ claude41opus = LLM(name="claude-opus-4-1-20250805",
                    temperature=0)
 """`claude-4.1-Opus` model."""
 
+gpt51 = LLM(name="gpt-5.1", max_output_tokens=128000, temperature=0.3)
+
+
 models : Dict[str, LLM] = {
                             "gemini-2.0-flash" : gemini20flash,
                             "gemini-2.5-flash" : gemini25flash,
@@ -96,4 +99,5 @@ models : Dict[str, LLM] = {
                             "claude-4-opus" : claude4opus,
                             "claude-4.1-opus" : claude41opus,
                            }
+models["gpt-5.1"] = gpt51
 """Dictionary with the available models."""
