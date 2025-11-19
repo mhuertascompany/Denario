@@ -13,6 +13,7 @@ from ..config import (
 )
 
 ALLOWED_DOC_EXTENSIONS = {".md", ".markdown", ".txt", ".tex", ".rst", ".pdf"}
+INGESTION_WORKSPACE_FOLDER = "erc_ingestion_workspace"
 
 CALL_DOCS_INSTRUCTIONS = """
 You are preparing an internal brief of the ERC call documents. Extract only the information that proposal-writing agents
@@ -102,9 +103,10 @@ def _summarize_documents(
 --- SOURCE DOCUMENTS ---
 {combined_text}
 """
+    workspace = _get_ingestion_workspace(project_dir)
     return preprocess_task(
         prompt,
-        work_dir=project_dir,
+        work_dir=str(workspace),
         summarizer_model=summarizer_model,
         summarizer_response_formatter_model=summarizer_response_formatter_model,
     )
@@ -187,3 +189,9 @@ def _extract_pdf_text(path: Path) -> str:
         for page in doc:
             text_chunks.append(page.get_text())
     return "\n".join(text_chunks)
+
+
+def _get_ingestion_workspace(project_dir: str) -> Path:
+    workspace = Path(project_dir) / INGESTION_WORKSPACE_FOLDER
+    workspace.mkdir(parents=True, exist_ok=True)
+    return workspace

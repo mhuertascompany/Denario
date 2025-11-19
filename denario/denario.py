@@ -127,6 +127,9 @@ class Denario:
                 raise FileNotFoundError("Please provide an input string or path to a markdown file.")
 
         field = input_check(field)
+
+        input_dir = os.path.join(self.project_dir, INPUT_FILES)
+        os.makedirs(input_dir, exist_ok=True)
                 
         with open(os.path.join(self.project_dir, INPUT_FILES, file), 'w') as f:
             f.write(field)
