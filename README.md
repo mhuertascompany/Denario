@@ -95,6 +95,26 @@ from denario import Journal
 den.get_paper(journal=Journal.APS)
 ```
 
+### ERC proposal workflow (experimental)
+
+Denario includes early support for ERC-style projects. Instantiate the ERC research model, ingest source documents, and draft a critiqued vision:
+
+```python
+from denario import Denario, ERCProposal
+
+den = Denario(research=ERCProposal(), project_dir="erc_pilot")
+den.ingest_call_documents()
+den.ingest_applicant_profile()
+den.ingest_prior_results()
+
+vision, objectives = den.generate_erc_vision(
+    idea_background="Multimessenger cosmology synergies",
+    literature_context="ESA Voyage2050 + Euclid DR1",
+)
+```
+
+Generated markdown files (e.g., `erc_call_info.md`, `erc_vision.md`, `erc_objectives.md`) live under `project_dir/input_files` for downstream agents or manual editing.
+
 You can also manually provide any info as a string or markdown file in an intermediate step, using the `set_idea`, `set_method` or `set_results` methods. For instance, for providing a file with the methodology developed by the user:
 
 ```python

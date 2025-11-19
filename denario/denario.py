@@ -3,6 +3,7 @@ import asyncio
 import time
 import os
 import shutil
+import re
 from pathlib import Path
 from PIL import Image 
 import cmbagent
@@ -45,7 +46,29 @@ from .erc.document_ingestion import (
     summarize_applicant_documents,
     summarize_prior_results_documents,
 )
+from .erc.vision_agent import ERCVisionAgent
 from cmbagent import preprocess_task
+
+
+def _split_vision_objectives(markdown_text: str) -> tuple[str, str]:
+    """Extract vision and objectives blocks from markdown output."""
+
+    def _extract(pattern: str) -> str:
+        match = re.search(pattern, markdown_text, flags=re.IGNORECASE | re.DOTALL)
+        if not match:
+            return ""
+        text = match.group(1).strip()
+        return text
+
+    vision = _extract(r"##\s*Vision[\w\s]*\n(.+?)(?=\n##|\Z)")
+    objectives = _extract(r"##\s*Objectives[\w\s]*\n(.+?)(?=\n##|\Z)")
+
+    if not vision:
+        vision = markdown_text.strip()
+    if not objectives:
+        objectives = ""
+
+    return vision, objectives
 
 class Denario:
     """
@@ -339,6 +362,86 @@ class Denario:
         )
         self.set_prior_results(summary)
         return summary
+
+    def generate_erc_vision(
+        self,
+        idea_background: str | list[str] | None = None,
+        literature_context: str | None = None,
+        idea_maker_model: LLM | str = models["gpt-4o"],
+        idea_hater_model: LLM | str = models["o3-mini"],
+        planner_model: LLM | str = models["gpt-4o"],
+        plan_reviewer_model: LLM | str = models["o3-mini"],
+        orchestration_model: LLM | str = models["gpt-4.1"],
+        formatter_model: LLM | str = models["o3-mini"],
+    ) -> tuple[str, str]:
+        """Generate ERC vision/objectives with maker/critic loop and save to files."""
+
+        erc_research = self._ensure_erc_research()
+
+        idea_maker_model = llm_parser(idea_maker_model)
+        idea_hater_model = llm_parser(idea_hater_model)
+        planner_model = llm_parser(planner_model)
+        plan_reviewer_model = llm_parser(plan_reviewer_model)
+        orchestration_model = llm_parser(orchestration_model)
+        formatter_model = llm_parser(formatter_model)
+
+        if not self.research.data_description:
+            try:
+                with open(os.path.join(self.project_dir, INPUT_FILES, DESCRIPTION_FILE), 'r') as f:
+                    self.research.data_description = f.read()
+            except FileNotFoundError:
+                raise ValueError("Data description is required before generating ERC vision.")
+
+        call_info = erc_research.call_info
+        if not call_info:
+            try:
+                with open(os.path.join(self.project_dir, INPUT_FILES, CALL_INFO_FILE), 'r') as f:
+                    call_info = f.read()
+                    erc_research.call_info = call_info
+            except FileNotFoundError:
+                raise ValueError("Call info is required before generating ERC vision.")
+
+        prior_results = erc_research.prior_results
+        if not prior_results:
+            prior_results_path = os.path.join(self.project_dir, INPUT_FILES, PRIOR_RESULTS_FILE)
+            if os.path.exists(prior_results_path):
+                with open(prior_results_path, 'r') as f:
+                    prior_results = f.read()
+                    erc_research.prior_results = prior_results
+            else:
+                prior_results = "No prior results have been provided yet."
+
+        if isinstance(idea_background, list):
+            idea_background_text = "\n".join(idea_background)
+        else:
+            idea_background_text = idea_background
+
+        vision_agent = ERCVisionAgent(
+            keys=self.keys,
+            work_dir=self.project_dir,
+            idea_maker_model=idea_maker_model.name,
+            idea_hater_model=idea_hater_model.name,
+            planner_model=planner_model.name,
+            plan_reviewer_model=plan_reviewer_model.name,
+            orchestration_model=orchestration_model.name,
+            formatter_model=formatter_model.name,
+        )
+
+        output_markdown = vision_agent.develop_vision(
+            call_info=call_info,
+            data_description=self.research.data_description,
+            prior_results=prior_results,
+            literature_context=literature_context,
+            idea_background=idea_background_text,
+        )
+
+        vision_text, objectives_text = _split_vision_objectives(output_markdown)
+
+        self.set_vision(vision_text)
+        if objectives_text:
+            self.set_objectives(objectives_text)
+
+        return vision_text, objectives_text
 
     def set_all(self) -> None:
         """Set all Research fields if present in the working directory"""
